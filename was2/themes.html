@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Ranga 网上应用店</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="icon" type="image/png" href="favicon.png">
+
+	<link href="../styles/main.css" rel="stylesheet">
+	<link href="../styles/dialog.css" rel="stylesheet">
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			font-family: sans-serif;
+		}
+
+		#top {
+			background: #f7f7f7;
+			padding: 30px 60px;
+		}
+
+		#top span {
+			margin: 20px;
+		}
+
+		#main {
+			padding: 40px 80px;
+		}
+
+		#main_content {
+			overflow-x: auto;
+		}
+
+		table {
+			border: 1px solid #ddd;
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		.item {
+			display: flex;
+			flex-flow: row;
+			align-items: center;
+			margin: 12px;
+		}
+
+		.logo {
+			display: inline-block;
+			width: 20px;
+			height: 20px;
+			margin-right: 12px;
+		}
+
+		@media (max-width: 750px) {
+
+			#top,
+			#main {
+				padding: 10px;
+			}
+		}
+
+	</style>
+</head>
+
+<body>
+	<div id="top">
+		<span style="font-size: 1.5em; font-weight: 600;">Ranga 网上应用店（Beta）</span>
+		<span style="font-size: 1.4em; color: var(--theme-color-hover-a);">主题</span>
+	</div>
+
+	<div id="main">
+		<div id="main_content">
+			<div class="item hide">
+				<div class="logo">
+				</div>
+				<div>
+					<a href="#!" onclick="selectTheme(this); return false;" class="link_select_theme"></a>
+					<div class="tips"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="../scripts/dialog.js"></script>
+	<script>
+		const prefix = 'https://glider0.github.io/was2/themes/';
+		let themes = [{
+			uuid: 'default',
+			version: '1',
+			compat: '1',
+			color: '#08c',
+			name: '默认样式',
+			auther: 'NSWA Maintainer'
+		}, {
+			uuid: 'ranga.purple',
+			version: '1',
+			compat: '1',
+			color: '#cc00c4',
+			name: '紫色',
+			auther: 'NSWA Maintainer'
+		}, {
+			uuid: 'ranga.green',
+			version: '1',
+			compat: '1',
+			color: '#00b52a',
+			name: '绿色',
+			auther: 'NSWA Maintainer'
+		}, {
+			uuid: 'ranga.orange',
+			version: '1',
+			compat: '1',
+			color: '#ef5c00',
+			name: '橙色',
+			auther: 'NSWA Maintainer'
+		}, {
+			uuid: 'bimg.example',
+			version: '1',
+			compat: '1',
+			color: '#08c',
+			name: '示例：自然背景 + 透明控制台（需要浏览器支持 Webp）',
+			auther: 'NSWA Maintainer'
+		}, {
+			uuid: 'festival.2019.mid-autumn',
+			version: '1',
+			compat: '1',
+			color: '#08c',
+			name: '2019 年中秋节特别主题',
+			auther: 'NSWA Maintainer'
+		}];
+
+		const ajaxGet = (uri, blob) => {
+			const promise = new Promise((resolve, reject) => {
+				let xhr = new XMLHttpRequest();
+
+				if (blob)
+					xhr.responseType = 'arraybuffer';
+
+				xhr.onreadystatechange = () => {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							resolve(blob ? xhr.response : xhr.responseText);
+						} else {
+							reject(xhr.status);
+						}
+					}
+				}
+
+				xhr.open("GET", uri, true);
+				xhr.send();
+			});
+
+			return promise;
+		}
+
+
+		const selectTheme = e => {
+			let id = parseInt(e.getAttribute('data-id')),
+				x = themes[id],
+				css = '';
+
+			if (x.uuid === 'default') {
+				parent.postMessage({
+					type: 'set-theme',
+					theme_css: css,
+					theme_compat: x.compat,
+					theme_uuid: x.uuid,
+					theme_version: x.version
+				}, '*');
+			} else {
+				let d = dialog.show(null, null, '正在下载必要的数据...', []);
+				let url = prefix + x.uuid + '.css';
+				ajaxGet(url, false).then(css => {
+					dialog.close(d);
+					parent.postMessage({
+						type: 'set-theme',
+						theme_css: css,
+						theme_compat: x.compat,
+						theme_uuid: x.uuid,
+						theme_version: x.version
+					}, '*');
+				}).catch(() => {
+					dialog.close(d);
+					dialog.show('无法下载必要的数据。')
+				});
+			}
+		}
+
+		if (window.name !== 'webcon-compat-1') {
+
+		}
+
+		let t = document.getElementsByClassName('item')[0];
+		let main_content = document.getElementById('main_content');
+
+		for (let i = 0; i < themes.length; i++) {
+			let c = themes[i];
+			let div = t.cloneNode(true);
+			div.classList.remove('hide');
+			div.getElementsByClassName('logo')[0].style.background = c.color;
+			div.getElementsByClassName('tips')[0].textContent = '作者: ' + c.auther;
+			let tmp = div.getElementsByClassName('link_select_theme')[0];
+			tmp.textContent = c.name;
+			tmp.setAttribute('data-id', i);
+			main_content.appendChild(div);
+		}
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+body {
+	--theme-color: #cc00c4;
+	--theme-color-hover-bg: rgba(204, 0, 196, 0.25);
+	--theme-color-hover-a: #f413e2;
+	--theme-color-disabled: #4e4e4e;
+	--theme-color-disabled-bg: #f0f0f0;
+	--theme-color-selection: black;
+	--theme-color-selection-bg: #f9b3fc;
+	--theme-color-input-bg: #f4f1f4;
+	--theme-color-input-hover-bg: #ede8ed;
+	--theme-color-input-placeholder: #555555;
+	--theme-color-select-fg: #202124;
+	--theme-color-select-foucs-shadow: rgba(232, 26, 216, 0.4);
+}
